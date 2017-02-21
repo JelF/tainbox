@@ -1,5 +1,6 @@
 require 'active_support/core_ext/hash/keys'
 require 'active_support/core_ext/object/json'
+require 'active_support/json'
 
 require_relative 'extensions'
 
@@ -45,7 +46,7 @@ module Tainbox::InstanceMethods
     tainbox_provided_attributes.include?(attribute.to_sym)
   end
 
-  def as_json(*args)
-    attributes.as_json(*args)
+  def as_json(force_super: false, **options)
+    force_super ? super(options) : attributes.as_json(options)
   end
 end

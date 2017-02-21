@@ -143,4 +143,35 @@ describe Tainbox do
       end
     end
   end
+
+  describe '#to_json' do
+    subject { model_class.new(foo: :bar) }
+
+    let(:model_class) do
+      Class.new { include Tainbox }
+    end
+
+    context 'default appearence' do
+      before { model_class.send(:attribute, :foo) }
+      its(:to_json) { is_expected.to eq <<-JSON.strip }
+        {"foo":"bar"}
+      JSON
+    end
+
+    context 'force_super used for as_json' do
+      before { model_class.class_eval <<-RUBY }
+        def to_hash
+          { foo: :bar }
+        end
+
+        def as_json(**options)
+          super(**options, force_super: true)
+        end
+      RUBY
+
+      its(:to_json) { is_expected.to eq <<-JSON.strip }
+        {"foo":"bar"}
+      JSON
+    end
+  end
 end
